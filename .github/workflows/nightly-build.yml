@@ -17,10 +17,10 @@ jobs:
         platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Install jq # for pruning old release assets
-        run: |
-          sudo apt update
-          sudo apt -y install jq
+      #- name: Install jq # for pruning old release assets
+        #run: |
+          #sudo apt update
+          #sudo apt -y install jq
       # Setup Build dependencies
       - name: Setup Java JDK
         uses: actions/setup-java@v2
@@ -46,6 +46,17 @@ jobs:
       - name: Package IDE
         run: mvn package
 
+      - name: Deploy release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.NIGHTLY_BUILD }}"
+          automatic_release_tag: 'nightly'
+          prerelease: true
+          files: |
+            org.lflang.rca/target/products/*.tar.gz
+            org.lflang.rca/target/products/*.zip
+            build_upload/*
+                                                                                            *.zip
       ## delete old assets
       #- name: Delete old release assets
         #run: .github/scripts/delete_old_nightly_assets.sh
